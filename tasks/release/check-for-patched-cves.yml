@@ -2,25 +2,35 @@
 platform: linux
 
 image_resource:
-  type: docker-image
+  type: registry-image
   source:
     repository: bosh/security-scanner
 
 inputs:
-- name: input_repo
-- name: version
 - name: bosh-shared-ci
-- name: release-notes
+- name: input_repo # The repo that will be scanned
+- name: version # The latest released version resource for the repo to compare against CVEs in the currently released version. The task will checkout the input_repo at `v$(cat version/version)`
+- name: release-notes # Optional existing release-notes. This task can be chained to other tasks generating release notes and this task will append new notes to the end of the existing `release-notes/release-notes.md` file
   optional: true
 
 outputs:
+# patched_cves contains the following files
+# - patched-cves.txt - a plain text list of the CVE identifiers
+# - patched-cves.json - a JSON array of CVE details provided by the trivy scanner
+# - release-notes.md - release notes that includes a "### Fixed CVEs:" header and then a list of the CVEs with id and description
+#                      If release-notes were passed in as `release-notes.md` in the `release-notes` input, the previous notes will also be included.
 - name: patched_cves
+
+# release-notes contains the following files
+# - release-notes.md - release notes that includes a "### Fixed CVEs:" header and then a list of the CVEs with id and description.
+#                      If release-notes were passed in as `release-notes.md` in the `release-notes` input, the new notes will be appended to the end.
+# - needs-release - indicates that the task completed successfully and a release is needed
 - name: release-notes
 
 run:
   path: bosh-shared-ci/tasks/release/check-for-patched-cves.sh
 
 params:
-  GIT_PRIVATE_KEY:
-  SEVERITY: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
-  SOURCE_PATH:
+  GIT_PRIVATE_KEY: # Optional. Added to the ssh-agent. May be needed to checkout the previous version tag, but usually not.
+  SEVERITY: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN # The CVE severity to scan for. If you only need to ship a new version based on CRITICAL and HIGH CVEs, only include those. Keep in mind the release notes will only include details for the CVEs matching the severity scanned for.
+  SOURCE_PATH: # Trivy normally has no problem finding the relevant source in a tree, but if it does, you can use this to switch to a path in the `input_repo` before scanning.
