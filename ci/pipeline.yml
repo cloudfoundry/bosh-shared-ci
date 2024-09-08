@@ -4,7 +4,6 @@ jobs:
     plan:
       - in_parallel:
         - get: bosh-shared-ci
-        - get: bosh-security-scanner-image
         - get: jammy-registry-image
         - get: trivy-github-release
           trigger: true
@@ -23,6 +22,7 @@ jobs:
                 tar xvf trivy-github-release/trivy*.tar.gz -C bosh-shared-ci/dockerfiles/security-scanner trivy
           inputs:
             - name: bosh-shared-ci
+            - name: trivy-github-release
           outputs:
             - name: bosh-shared-ci
       - put: bosh-security-scanner-image
