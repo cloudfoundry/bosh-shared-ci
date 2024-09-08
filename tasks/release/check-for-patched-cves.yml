@@ -1,0 +1,26 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: bosh/security-scanner
+
+inputs:
+- name: input_repo
+- name: version
+- name: bosh-shared-ci
+- name: release-notes
+  optional: true
+
+outputs:
+- name: patched_cves
+- name: release-notes
+
+run:
+  path: bosh-shared-ci/tasks/release/check-for-patched-cves.sh
+
+params:
+  GIT_PRIVATE_KEY:
+  SEVERITY: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
+  SOURCE_PATH:
