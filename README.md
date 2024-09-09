@@ -82,7 +82,7 @@ The task includes the output file `release-notes/needs-release`. If you have a s
 each of them doing different checks, this file can be checked after they have all run to see if a release is needed.
 
 ---
-**ensure-task-succeeded**
+**ensure-task-succeeded**  
 This task can be used to ensure the `check-for-patched-cves` and `check-for-updated-blobs` tasks were able to successfully
 run. Since these tasks are often used in a `try` step, it is a good idea to make sure it didn't fail for other reasons.
 
