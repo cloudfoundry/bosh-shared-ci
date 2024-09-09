@@ -37,6 +37,7 @@ if [ -z "$patched_cves" ]; then
   echo "" > patched_cves/patched-cves.txt
   echo "{}" > patched_cves/patched-cves.json
   echo "" > patched_cves/release-notes.md
+  touch patched_cves/success
   echo "No fixed CVEs detected"
   exit 1
 fi
@@ -60,4 +61,5 @@ echo "$patched_cves" > patched_cves/patched-cves.txt
 echo "$patched_json" > patched_cves/patched-cves.json
 echo "$release_notes" >> patched_cves/release-notes.md
 echo "$release_notes" >> release-notes/release-notes.md
+touch patched_cves/success
 touch release-notes/needs-release

@@ -19,6 +19,7 @@ outputs:
 # - patched-cves.json - a JSON array of CVE details provided by the trivy scanner
 # - release-notes.md - release notes that includes a "### Fixed CVEs:" header and then a list of the CVEs with id and description
 #                      If release-notes were passed in as `release-notes.md` in the `release-notes` input, the previous notes will also be included.
+# - success - indicates the task exited successfully
 - name: patched_cves
 
 # release-notes contains the following files

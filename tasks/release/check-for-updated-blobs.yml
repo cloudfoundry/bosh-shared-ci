@@ -1,0 +1,33 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: bosh/security-scanner
+
+inputs:
+- name: bosh-shared-ci
+- name: input_repo # The repo that will be checked for blob updates
+- name: version # The latest released version resource for the repo to compare blob versions against. The task will checkout the input_repo at `v$(cat version/version)`
+- name: release-notes # Optional existing release-notes. This task can be chained to other tasks generating release notes and this task will append new notes to the end of the existing `release-notes/release-notes.md` file
+  optional: true
+
+outputs:
+# release-notes contains the following files
+# - release-notes.md - release notes that includes a "### Updates:" header and then a list of the updated blobs with the syntax "* Updates EXAMPLE_BLOB from PREVIOUS_VERSION to NEW_VERSION".
+#                      If release-notes were passed in as `release-notes.md` in the `release-notes` input, the new notes will be appended to the end.
+# - needs-release - indicates that the task completed successfully and blobs have been updated
+- name: release-notes
+
+# blob-updates only contains the `success` file, indicating the task exited successfully
+- name: blob-updates
+
+run:
+  path: bosh-shared-ci/tasks/release/check-for-updated-blobs.sh
+
+params:
+# Array of blobs to check. These strings will be used to grep the blobs.yml file and look for the line containing
+# the desired blob. The version is then also captured from the matching line.
+# All provided blob strings are checked in a single run of hte task.
+  BLOBS:
