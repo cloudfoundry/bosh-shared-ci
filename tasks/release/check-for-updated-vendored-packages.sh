@@ -8,8 +8,8 @@ parsed_packages="$(echo "$PACKAGES" | jq -r '.[]')"
 
 pushd input_repo
   for package in ${parsed_packages}; do
-    current_version="$(git log -n 1 --format=format:"%B" -- packages/${package} | egrep -o '[0-9]+\.[0-9]+\.[0-9]+')"
-    previous_version="$(git log -n 1 --format=format:"%B" "v${version_number}" -- packages/${package} | egrep -o '[0-9]+\.[0-9]+\.[0-9]+')"
+    current_version="$(git log -n 1 --format=format:"%B" -- packages/${package} | grep -Eo '[0-9]+[0-9.]*[0-9]+')"
+    previous_version="$(git log -n 1 --format=format:"%B" "v${version_number}" -- packages/${package} | grep -Eo '[0-9]+[0-9.]*[0-9]+')"
 
     if [ "${current_version}" != "${previous_version}" ]; then
       if [ "${updated_package}" == "0" ]; then
