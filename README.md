@@ -16,7 +16,8 @@ avoid rate limiting.
 
 ---
 **create-final-release**  
-Creates a new final release for `input_repo` and commits the final release artifacts.
+Creates a new final release for `release_repo` and commits the final release artifacts. `release_repo`
+will be modified and output again for you to push.
 
 The full `private.yml` file must be passed as the `PRIVATE_YAML` parameter. This can be done
 with a multi line yaml string in your pipeline that interpolates the blobstore secrets from

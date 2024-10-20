@@ -9,7 +9,7 @@ fi
 git config --global user.name "${GIT_USER_NAME}"
 git config --global user.email "${GIT_USER_EMAIL}"
 
-pushd input_repo > /dev/null
+pushd release_repo > /dev/null
   set +x
   echo "${PRIVATE_YML}" > config/private.yml
   set -x
@@ -22,4 +22,5 @@ pushd input_repo > /dev/null
   git commit -m "Final release ${new_release_version}"
 popd  > /dev/null
 
+echo "${new_release_version}" > release-metadata/version
 echo "v${new_release_version}" > release-metadata/tag-name

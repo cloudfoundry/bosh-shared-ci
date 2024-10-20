@@ -7,12 +7,15 @@ image_resource:
 
 inputs:
 - name: bosh-shared-ci
-- name: input_repo # The repo to create the final release for
+- name: release_repo # The repo to create the final release for
 - name: version # If version is provided, the version/version file will be used as the final version number.
   optional: true
 
 outputs:
+# The modified release_repo input with the new final release commit
+- name: release_repo
 # release_metadata contains the following files
+# - version  - contains just the version number of the release that was created
 # - tag-name - contains "v" followed by the version number. Useful in following tasks such as git pushes
 #              that want to create a tag or the name attribute of a github release
 - name: release_metadata
