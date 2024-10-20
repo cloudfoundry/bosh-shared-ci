@@ -1,0 +1,26 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: bosh/cli
+
+inputs:
+- name: bosh-shared-ci
+- name: input_repo # The repo to create the final release for
+- name: version # If version is provided, the version/version file will be used as the final version number.
+  optional: true
+
+outputs:
+# release_metadata contains the following files
+# - tag-name - contains "v" followed by the version number. Useful in following tasks such as git pushes
+#              that want to create a tag or the name attribute of a github release
+- name: release_metadata
+
+run:
+  path: bosh-shared-ci/tasks/release/create-final-release.sh
+
+params:
+  GIT_USER_NAME: # Name associated with the final release git commit
+  GIT_USER_EMAIL: # Email associated with the final release git commit
+  PRIVATE_YML: # The full private.yml file
