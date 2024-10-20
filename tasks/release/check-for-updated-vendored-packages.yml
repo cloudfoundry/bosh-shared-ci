@@ -1,0 +1,35 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: bosh/security-scanner
+
+inputs:
+- name: bosh-shared-ci
+- name: input_repo # The repo that will be checked for updates to vendored packages
+- name: version # The latest released version resource for the repo to compare package versions against. The task will checkout the input_repo at `v$(cat version/version)`
+- name: release-notes # Optional existing release-notes. This task can be chained to other tasks generating release notes and this task will append new notes to the end of the existing `release-notes/release-notes.md` file
+  optional: true
+
+outputs:
+# release-notes contains the following files
+# - release-notes.md - release notes that includes a "### Package Updates:" header and then a list of the updated packages with the syntax "* Updates EXAMPLE_PACKAGE from PREVIOUS_VERSION to NEW_VERSION".
+#                      If release-notes were passed in as `release-notes.md` in the `release-notes` input, the new notes will be appended to the end.
+# - needs-release - indicates that the task completed successfully and blobs have been updated
+- name: release-notes
+
+# package-updates only contains the `success` file, indicating the task exited successfully
+- name: package-updates
+
+run:
+  path: bosh-shared-ci/tasks/release/check-for-updated-vendored-packages.sh
+
+params:
+# Array of packages to check. These strings must match the folder names for the packages.
+# The task will determine the version of the vendored package by extracting a version number
+# from the last commit to the package using the regex '[0-9]+\.[0-9]+\.[0-9]+'. So your auto bump
+# of packages need to include the version number in the commit message.
+# All provided PACKAGES are checked in a single run of the task.
+  PACKAGES:

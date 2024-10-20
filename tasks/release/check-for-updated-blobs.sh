@@ -7,8 +7,6 @@ updated_blob=0
 parsed_blobs="$(echo "$BLOBS" | jq -r '.[]')"
 
 pushd input_repo
-  ls -la
-  git status
   for blob in $parsed_blobs; do
     current_version="$(git show HEAD:config/blobs.yml | grep "${blob}" | grep -Eo "[0-9]+(\.[0-9]+)+")"
     previous_version="$(git show v$version_number:config/blobs.yml | grep "${blob}" | grep -Eo "[0-9]+(\.[0-9]+)+")"

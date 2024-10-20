@@ -82,8 +82,44 @@ The task includes the output file `release-notes/needs-release`. If you have a s
 each of them doing different checks, this file can be checked after they have all run to see if a release is needed.
 
 ---
+**check-for-updated-vendored-packages**  
+This task is intended to be used as a release trigger. The task will check the versions of vendored packages found in the
+`input_repo` and then compare that with the versions found by checking out the release tag provided by the
+`version` input. If a package version difference is found, the task succeeds.
+
+For task to work correctly, the commit messages that update the vendored packages need to note the version such that the
+regular expression `[0-9]+\.[0-9]+\.[0-9]+` will be able to find it.
+
+As Concourse provides no conditional branching logic, it gets a bit tricky to trigger a new release when a package has
+been updated, but also avoid having the `check-for-updated-vendored-packages` job be red all the time. Below is an example that
+can be used to accomplish this in a clean-ish way. The `check-for-updated-vendored-packages` is wrapped in a `try` step, and then
+an `on_success` step hook is used to modify a resource. The Concourse job that actually does the releasing can then
+trigger off new versions of that resource. It's also possible to just put the release steps directly within the
+`on_success` step hook, but that can get messy if there is a large number of steps.
+
+```yaml
+- try:
+    task: check-for-updated-vendored-packages
+    file: bosh-shared-ci/tasks/release/check-for-updated-vendored-packages.yml
+    params:
+      PACKAGES: [package-name1, package-name2]
+    input_mapping:
+      input_repo: my-repo
+      version: my-version-resource
+    on_success:
+      put: my-time-trigger-resource
+```
+
+Since the `check-for-updated-vendored-packages` task is in a `try` step, it's possible that the task is actually failing, rather
+than exiting 1 because there are no package updates. To guard against that, look at the `ensure-task-succeeded` task.
+
+The task includes the output file `release-notes/needs-release`. If you have a series of steps in your release pipeline
+each of them doing different checks, this file can be checked after they have all run to see if a release is needed.
+
+---
 **ensure-task-succeeded**  
-This task can be used to ensure the `check-for-patched-cves` and `check-for-updated-blobs` tasks were able to successfully
-run. Since these tasks are often used in a `try` step, it is a good idea to make sure it didn't fail for other reasons.
+This task can be used to ensure the `check-for-patched-cves`, `check-for-updated-blobs` and `check-for-updated-vendored-packages`
+tasks were able to successfully run. Since these tasks are often used in a `try` step, it is a good idea to make sure
+it didn't fail for other reasons.
 
 The task will exit 1 if the task being checked did not complete successfully. Make sure this task is NOT run in a `try` step.

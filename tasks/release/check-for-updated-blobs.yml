@@ -29,5 +29,5 @@ run:
 params:
 # Array of blobs to check. These strings will be used to grep the blobs.yml file and look for the line containing
 # the desired blob. The version is then also captured from the matching line.
-# All provided blob strings are checked in a single run of hte task.
+# All provided blob strings are checked in a single run of the task.
   BLOBS:
