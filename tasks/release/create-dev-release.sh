@@ -14,4 +14,4 @@ popd  > /dev/null
 release_metadata="$(bosh inspect-local-release ./release_tarball/release.tgz --json)"
 new_release_version="$(bosh interpolate <(echo "${release_metadata}") --path /Tables/0/Rows/0/version)"
 
-echo "${new_release_version}" > release-metadata/version
+echo "${new_release_version}" > release_metadata/version

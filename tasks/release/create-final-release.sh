@@ -22,5 +22,5 @@ pushd release_repo > /dev/null
   git commit -m "Final release ${new_release_version}"
 popd  > /dev/null
 
-echo "${new_release_version}" > release-metadata/version
-echo "v${new_release_version}" > release-metadata/tag-name
+echo "${new_release_version}" > release_metadata/version
+echo "v${new_release_version}" > release_metadata/tag-name
