@@ -32,6 +32,22 @@ PRIVATE_YML: |
 ```
 
 ---
+**create-dev-release**  
+Creates a new dev release release tarball for `release_repo`. The tarball is output as `release_tarball/tarball.tgz`
+
+If your final blobstore is private, you'll need to provide `PRIVATE_YAML`. Int his case, the full `private.yml` file
+must be passed as the `PRIVATE_YAML` parameter. This can be done with a multi line yaml string in your pipeline that
+interpolates the blobstore secrets from your secret store.
+
+```yaml
+PRIVATE_YML: |
+  blobstore:
+    options:
+      credentials_source: static
+      json_key: '((blobstore_credentials))'
+```
+
+---
 **check-for-patched-cves**  
 This task is intended to be used as a release trigger. The task will scan the `input_repo` for CVEs and then compare
 that list of CVEs with the CVEs found by checking out the release tag provided by the `version` input. If the list is

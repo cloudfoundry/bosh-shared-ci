@@ -1,0 +1,23 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: bosh/cli
+
+inputs:
+- name: bosh-shared-ci
+- name: release_repo # The repo to create the final release for
+
+outputs:
+# release_tarball contains the build release named "release.tgz"
+- name: release_tarball
+# release_metadata contains the following files
+# - version - contains the version number of the release that was created
+- name: release_metadata
+
+run:
+  path: bosh-shared-ci/tasks/release/create-dev-release.sh
+
+params:
+  PRIVATE_YML: # Optional. The full private.yml file
