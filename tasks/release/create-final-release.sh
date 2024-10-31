@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 version_flag=""
-if ! [ -f version/version ]; then
+if [ -f version/version ]; then
   version_flag="--version $(cat version/version)"
 fi
 
