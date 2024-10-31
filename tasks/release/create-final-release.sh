@@ -24,3 +24,4 @@ popd  > /dev/null
 
 echo "${new_release_version}" > release_metadata/version
 echo "v${new_release_version}" > release_metadata/tag-name
+echo "" > release_metadata/empty-file

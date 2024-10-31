@@ -18,6 +18,7 @@ outputs:
 # - version  - contains just the version number of the release that was created
 # - tag-name - contains "v" followed by the version number. Useful in following tasks such as git pushes
 #              that want to create a tag or the name attribute of a github release
+# - empty-file - can be used for various purposes, ie. to clear release notes
 - name: release_metadata
 
 run:
