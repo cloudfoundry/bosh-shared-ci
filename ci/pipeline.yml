@@ -3,6 +3,8 @@ jobs:
   - name: build-docker-image
     plan:
       - in_parallel:
+        - get: daily
+          trigger: true
         - get: bosh-shared-ci
         - get: jammy-registry-image
         - get: trivy-github-release
@@ -20,11 +22,15 @@ jobs:
               - -c
               - |
                 tar xvf trivy-github-release/trivy*.tar.gz -C bosh-shared-ci/dockerfiles/security-scanner trivy
+                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-db-only --debug
+                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-java-db-only --debug
           inputs:
             - name: bosh-shared-ci
             - name: trivy-github-release
           outputs:
             - name: bosh-shared-ci
+          params:
+            GITHUB_TOKEN: ((github_public_repo_token))
       - put: bosh-security-scanner-image
         params:
           build: "bosh-shared-ci/dockerfiles/security-scanner"
@@ -53,3 +59,7 @@ resources:
       tag: jammy
       username: ((dockerhub_username))
       password: ((dockerhub_password))
+  - name: daily
+    type: time
+    source:
+      interval: 24h

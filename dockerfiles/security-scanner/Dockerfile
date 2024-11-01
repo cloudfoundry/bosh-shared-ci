@@ -11,3 +11,4 @@ RUN apt-get update && \
         wget
 
 COPY trivy /usr/local/bin/trivy
+COPY trivy-cache /trivy-cache
