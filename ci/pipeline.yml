@@ -21,9 +21,11 @@ jobs:
             args:
               - -c
               - |
+                apt update -y
+                apt -y install ca-certificates
                 tar xvf trivy-github-release/trivy*.tar.gz -C bosh-shared-ci/dockerfiles/security-scanner trivy
-                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-db-only --debug
-                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-java-db-only --debug
+                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-db-only
+                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-java-db-only
           inputs:
             - name: bosh-shared-ci
             - name: trivy-github-release

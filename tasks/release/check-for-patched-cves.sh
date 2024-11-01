@@ -6,7 +6,8 @@ version_number="$(cat version/version)"
 
 pushd "input_repo/$SOURCE_PATH"
 
-current_json="$(trivy filesystem . --severity "$SEVERITY" --scanners vuln --format json | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
+trivy_flags=(--cache-dir /trivy-cache --skip-check-update --skip-java-db-update --skip-db-update --severity "${SEVERITY}" --scanners vuln --format json)
+current_json="$(trivy filesystem . "${trivy_flags[@]}" | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
 current_list=$(echo "$current_json" | jq -r "map(.VulnerabilityID) | sort | join(\"\\n\")")
 
 if [ -n "$GIT_PRIVATE_KEY" ]; then
@@ -22,7 +23,7 @@ EOF
 fi
 
 git checkout "v${version_number}"
-previous_json="$(trivy filesystem . --severity "$SEVERITY" --scanners vuln --format json | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
+previous_json="$(trivy filesystem . "${trivy_flags[@]}" | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
 previous_list=$(echo "$previous_json" | jq -r "map(.VulnerabilityID) | sort | join(\"\\n\")")
 
 popd
