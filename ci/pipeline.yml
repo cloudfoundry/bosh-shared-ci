@@ -25,8 +25,37 @@ jobs:
                 apt update -y
                 apt -y install ca-certificates
                 tar xvf trivy-github-release/trivy*.tar.gz -C bosh-shared-ci/dockerfiles/security-scanner trivy
-                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-db-only
-                bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-java-db-only
+                for i in $(seq 1 5); do
+                  echo "Attempt $i to download trivy db"
+                  if bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-db-only; then
+                    echo "Great success!"
+                    break
+                  fi
+
+                  if [ "$i" -eq "5" ]; then
+                    echo "Tried 5 times, giving up for today!"
+                    exit 1
+                  fi
+
+                  echo "Failed, sleeping for 5 seconds"
+                  sleep 5
+                done
+
+                for i in $(seq 1 5); do
+                  echo "Attempt $i to download trivy java db"
+                  if bosh-shared-ci/dockerfiles/security-scanner/trivy filesystem --cache-dir bosh-shared-ci/dockerfiles/security-scanner/trivy-cache --download-java-db-only; then
+                    echo "Great success!"
+                    break
+                  fi
+
+                  if [ "$i" -eq "5" ]; then
+                    echo "Tried 5 times, giving up for today!"
+                    exit 1
+                  fi
+
+                  echo "Failed, sleeping for 5 seconds"
+                  sleep 5
+                done
           inputs:
             - name: bosh-shared-ci
             - name: trivy-github-release
