@@ -14,8 +14,10 @@ pushd release_repo > /dev/null
   echo "${PRIVATE_YML}" > config/private.yml
   set -x
 
-  bosh create-release --final ${version_flag}
+  bosh create-release --final ${version_flag} --tarball=/tmp/release-tarball.tgz
   new_release_version=$(find releases/**/*.yml | grep -Eo '[0-9.]+[0-9]' | sort -V | tail -1)
+
+  cp /tmp/release-tarball.tgz ../release_metdata/$RELEASE_TARBALL_BASE_NAME-$new_release_version.tgz
 
   git add -A
   git status
