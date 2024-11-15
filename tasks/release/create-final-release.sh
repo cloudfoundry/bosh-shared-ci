@@ -21,7 +21,7 @@ pushd release_repo > /dev/null
   if [ -n "${RELEASE_TARBALL_BASE_NAME}" ]; then
     release_tarball_name="$RELEASE_TARBALL_BASE_NAME-$new_release_version"
   fi
-  cp /tmp/release-tarball.tgz ../release_metdata/"${release_tarball_name}".tgz
+  cp /tmp/release-tarball.tgz ../release_metadata/"${release_tarball_name}".tgz
 
   git add -A
   git status
