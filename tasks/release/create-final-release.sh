@@ -17,7 +17,11 @@ pushd release_repo > /dev/null
   bosh create-release --final ${version_flag} --tarball=/tmp/release-tarball.tgz
   new_release_version=$(find releases/**/*.yml | grep -Eo '[0-9.]+[0-9]' | sort -V | tail -1)
 
-  cp /tmp/release-tarball.tgz ../release_metdata/$RELEASE_TARBALL_BASE_NAME-$new_release_version.tgz
+  release_tarball_name="${new_release_version}"
+  if [ -n "${RELEASE_TARBALL_BASE_NAME}" ]; then
+    release_tarball_name="$RELEASE_TARBALL_BASE_NAME-$new_release_version"
+  fi
+  cp /tmp/release-tarball.tgz ../release_metdata/"${release_tarball_name}".tgz
 
   git add -A
   git status

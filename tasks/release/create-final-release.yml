@@ -20,6 +20,7 @@ outputs:
 #              that want to create a tag or the name attribute of a github release
 # - empty-file - can be used for various purposes, ie. to clear release notes
 # - $RELEASE_TARBALL_BASE_NAME-$version.tgz - the Bosh Final Release tarball created from 'bosh create-release --final --tarball=...'
+#                                             Optional - if not defined, the tarball will just be named as the version
 - name: release_metadata
 
 run:
@@ -29,4 +30,4 @@ params:
   GIT_USER_NAME: # Name associated with the final release git commit
   GIT_USER_EMAIL: # Email associated with the final release git commit
   PRIVATE_YML: # The full private.yml file
-  RELEASE_TARBALL_BASE_NAME: # The base or "product" name for the tarball. Writes out a final release tarball in release_metadata/$RELEASE_TARBALL_BASE_NAME-$release-version.tgz
+  RELEASE_TARBALL_BASE_NAME: # (Optional) The base or "product" name for the tarball. Writes out a final release tarball in release_metadata/$RELEASE_TARBALL_BASE_NAME-$release-version.tgz
