@@ -8,8 +8,10 @@ parsed_packages="$(echo "$PACKAGES" | jq -r '.[]')"
 
 pushd input_repo
   for package in ${parsed_packages}; do
-    current_version="$(git log -n 1 --format=format:"%B" -- packages/${package} | grep -Eo '[0-9]+[0-9.]*[0-9]+')"
-    previous_version="$(git log -n 1 --format=format:"%B" "v${version_number}" -- packages/${package} | grep -Eo '[0-9]+[0-9.]*[0-9]+')"
+    current_version="$(git log -n 1 --format=format:"%B" -- packages/${package} | grep -Eo '[0-9]+[0-9.]*[0-9]+' | tail -1)"
+    set +e
+    previous_version="$(git log -n 1 --format=format:"%B" "v${version_number}" -- packages/${package} | grep -Eo '[0-9]+[0-9.]*[0-9]+' | tail -1)"
+    set -e
 
     if [ "${current_version}" != "${previous_version}" ]; then
       if [ "${updated_package}" == "0" ]; then
@@ -17,8 +19,13 @@ pushd input_repo
       fi
       updated_package=1
 
-      release_notes="${release_notes}
+      if [ "${previous_version}" == "" ]; then
+        release_notes="${release_notes}
+* Updates ${package} to ${current_version}"
+      else
+        release_notes="${release_notes}
 * Updates ${package} from ${previous_version} to ${current_version}"
+      fi
     fi
   done
 popd
