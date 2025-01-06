@@ -17,8 +17,12 @@ pushd input_repo
       fi
       updated_blob=1
 
+      # Files will sometimes include a second set of numbers that are not the version number, here we strip those out
+      stripped_current_version=$(echo "${current_version}" | grep -v "${previous_version}")
+      stripped_previous_version=$(echo "${previous_version}" | grep -v "${current_version}")
+
       release_notes="${release_notes}
-* Updates ${blob} from ${previous_version} to ${current_version}"
+* Updates ${blob} from ${stripped_previous_version} to ${stripped_current_version}"
     fi
   done
 popd
