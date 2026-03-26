@@ -24,8 +24,9 @@ fi
 
 if [ "${ENABLE_GIT_LFS}" != "true" ]; then
   export GIT_LFS_SKIP_SMUDGE=1
-  git config --local filter.lfs.process "git-lfs filter-process --skip"
-  git config --local filter.lfs.smudge "git-lfs smudge --skip -- %f"
+  git config --local filter.lfs.process ""
+  git config --local filter.lfs.smudge ""
+  git config --local filter.lfs.clean ""
   git config --local filter.lfs.required false
 fi
 
