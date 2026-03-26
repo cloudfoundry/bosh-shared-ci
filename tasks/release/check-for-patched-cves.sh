@@ -22,6 +22,13 @@ EOF
   ssh-add git-private-key
 fi
 
+if [ "${ENABLE_GIT_LFS}" != "true" ]; then
+  export GIT_LFS_SKIP_SMUDGE=1
+  git config --local filter.lfs.process "git-lfs filter-process --skip"
+  git config --local filter.lfs.smudge "git-lfs smudge --skip -- %f"
+  git config --local filter.lfs.required false
+fi
+
 git checkout "v${version_number}"
 previous_json="$(trivy filesystem . "${trivy_flags[@]}" | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
 previous_list=$(echo "$previous_json" | jq -r "map(.VulnerabilityID) | sort | join(\"\\n\")")
