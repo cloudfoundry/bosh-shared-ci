@@ -8,10 +8,22 @@ parsed_blobs="$(echo "$BLOBS" | jq -r '.[]')"
 
 pushd input_repo
   for blob in $parsed_blobs; do
-    current_version="$(git show HEAD:config/blobs.yml | grep "${blob}" | grep -Eo "[0-9]+(\.[0-9]+)+")"
-    previous_version="$(git show v$version_number:config/blobs.yml | grep "${blob}" | grep -Eo "[0-9]+(\.[0-9]+)+")"
+    current_version="$(git show HEAD:config/blobs.yml | grep "${blob}" | grep -Eo "[0-9]+(\.[0-9]+)+" || true)"
+    previous_version="$(git show v$version_number:config/blobs.yml | grep "${blob}" | grep -Eo "[0-9]+(\.[0-9]+)+" || true)"
 
-    if [ "${current_version}" != "${previous_version}" ]; then
+    if [ -z "${current_version}" ]; then
+      echo "Warning: blob '${blob}' not found in current blobs.yml, skipping"
+      continue
+    fi
+
+    if [ -z "${previous_version}" ]; then
+      if [ "${updated_blob}" == "0" ]; then
+        release_notes="### Updates:"
+      fi
+      updated_blob=1
+      release_notes="${release_notes}
+* Adds ${blob} ${current_version}"
+    elif [ "${current_version}" != "${previous_version}" ]; then
       if [ "${updated_blob}" == "0" ]; then
         release_notes="### Updates:"
       fi
