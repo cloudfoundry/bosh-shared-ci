@@ -32,7 +32,5 @@ run:
   path: bosh-shared-ci/tasks/release/check-for-patched-cves.sh
 
 params:
-  GIT_PRIVATE_KEY: # Optional. Added to the ssh-agent. May be needed to checkout the previous version tag, but usually not.
-  ENABLE_GIT_LFS: "false" # Optional. Set to "true" to allow Git LFS to fetch objects during git checkout. Defaults to "false" because the CVE scan only needs source files, not LFS blobs.
   SEVERITY: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN # The CVE severity to scan for. If you only need to ship a new version based on CRITICAL and HIGH CVEs, only include those. Keep in mind the release notes will only include details for the CVEs matching the severity scanned for.
   SOURCE_PATH: # Trivy normally has no problem finding the relevant source in a tree, but if it does, you can use this to switch to a path in the `input_repo` before scanning.
