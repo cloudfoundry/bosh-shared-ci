@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
+
+# Force HTTPS instead of SSH for github interactions
+#  `trivy` has been compromised in the past and should not be
+#  trusted, so we DO NOT want to provide any SSH keys to this task
+git config --local url."https://github.com/".insteadOf "git@github.com:"
 
 version_number="$(cat version/version)"
 
@@ -9,26 +13,6 @@ pushd "input_repo/$SOURCE_PATH"
 trivy_flags=(--cache-dir /trivy-cache --skip-check-update --skip-java-db-update --skip-db-update --severity "${SEVERITY}" --scanners vuln --format json)
 current_json="$(trivy filesystem . "${trivy_flags[@]}" | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
 current_list=$(echo "$current_json" | jq -r "map(.VulnerabilityID) | sort | join(\"\\n\")")
-
-if [ -n "$GIT_PRIVATE_KEY" ]; then
-  mkdir -p ~/.ssh
-  cat > ~/.ssh/config <<EOF
-StrictHostKeyChecking no
-EOF
-
-  echo "$GIT_PRIVATE_KEY" > git-private-key
-  chmod 600 git-private-key
-  eval "$(ssh-agent -s)"
-  ssh-add git-private-key
-fi
-
-if [ "${ENABLE_GIT_LFS}" != "true" ]; then
-  export GIT_LFS_SKIP_SMUDGE=1
-  git config --local filter.lfs.process ""
-  git config --local filter.lfs.smudge ""
-  git config --local filter.lfs.clean ""
-  git config --local filter.lfs.required false
-fi
 
 git checkout "v${version_number}"
 previous_json="$(trivy filesystem . "${trivy_flags[@]}" | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
