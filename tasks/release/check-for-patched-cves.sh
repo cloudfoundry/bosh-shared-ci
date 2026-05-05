@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+version_number="$(cat version/version)"
+
+pushd "input_repo/$SOURCE_PATH"
 # Force HTTPS instead of SSH for github interactions
 #  `trivy` has been compromised in the past and should not be
 #  trusted, so we DO NOT want to provide any SSH keys to this task
 git config --local url."https://github.com/".insteadOf "git@github.com:"
-
-version_number="$(cat version/version)"
-
-pushd "input_repo/$SOURCE_PATH"
 
 trivy_flags=(--cache-dir /trivy-cache --skip-check-update --skip-java-db-update --skip-db-update --severity "${SEVERITY}" --scanners vuln --format json)
 current_json="$(trivy filesystem . "${trivy_flags[@]}" | jq "(if .Results then .Results else [] end) | map(.Vulnerabilities) | flatten | map(select(. != null)) | unique_by(.VulnerabilityID)")"
