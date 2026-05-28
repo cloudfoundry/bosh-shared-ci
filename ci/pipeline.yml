@@ -65,7 +65,18 @@ jobs:
             GITHUB_TOKEN: ((github_public_repo_token))
       - task: build-security-scanner-image
         privileged: true
-        file: bosh-shared-ci/tasks/docker/build-oci-image.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: concourse/oci-build-task
+          inputs:
+            - name: bosh-shared-ci
+          outputs:
+            - name: image
+          run:
+            path: build
         params:
           CONTEXT: bosh-shared-ci/dockerfiles/security-scanner
           DOCKERFILE: bosh-shared-ci/dockerfiles/security-scanner/Dockerfile
@@ -81,13 +92,14 @@ resources:
   - name: trivy-github-release
     type: github-release
     source:
-      access_token: ((github_public_repo_token))
       owner: aquasecurity
       repository: trivy
+      access_token: ((github_public_repo_token))
   - name: bosh-security-scanner-image
     type: registry-image
     source:
       repository: bosh/security-scanner
+      tag: latest
       username: ((dockerhub_username))
       password: ((dockerhub_password))
   - name: jammy-registry-image
