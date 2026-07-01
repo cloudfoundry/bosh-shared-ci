@@ -23,9 +23,14 @@ pushd release_repo > /dev/null
   fi
   cp /tmp/release-tarball.tgz ../release_metadata/"${release_tarball_name}".tgz
 
+  commit_message="Final release ${new_release_version}"
+  if [ -n "${GIT_COMMIT_MESSAGE_SUFFIX:-}" ]; then
+    commit_message="${commit_message}${GIT_COMMIT_MESSAGE_SUFFIX}"
+  fi
+
   git add -A
   git status
-  git commit -m "Final release ${new_release_version}"
+  git commit -m "${commit_message}"
 popd  > /dev/null
 
 echo "${new_release_version}" > release_metadata/version
