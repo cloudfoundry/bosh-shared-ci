@@ -31,3 +31,9 @@ params:
   GIT_USER_EMAIL: # Email associated with the final release git commit
   PRIVATE_YML: # The full private.yml file
   RELEASE_TARBALL_BASE_NAME: # (Optional) The base or "product" name for the tarball. Writes out a final release tarball in release_metadata/$RELEASE_TARBALL_BASE_NAME-$release-version.tgz
+  GIT_COMMIT_MESSAGE_SUFFIX: # (Optional) String appended verbatim to the commit message (no leading whitespace added by the task).
+                             # Same-line token:  GIT_COMMIT_MESSAGE_SUFFIX: " [skip-ci]"
+                             # Multi-line body — use a YAML block scalar in your pipeline params:
+                             #   GIT_COMMIT_MESSAGE_SUFFIX: |
+                             #
+                             #     [skip-commit-ruleset]
