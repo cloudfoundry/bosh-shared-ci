@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-if [ ! -f version/version ]; then
-  echo "ERROR: version/version file not found. The version resource must be provided as an input."
+if [ ! -s version/version ]; then
+  echo "ERROR: version/version file not found or empty. The version resource must be provided as an input." >&2
   exit 1
 fi
 
-new_release_version=$(cat version/version)
-
+new_release_version="$(< version/version)"
+if ! [[ "${new_release_version}" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+  echo "ERROR: Invalid release version '${new_release_version}' (expected digits and dots)." >&2
+  exit 1
+fi
 git config --global user.name "${GIT_USER_NAME}"
 git config --global user.email "${GIT_USER_EMAIL}"
 
