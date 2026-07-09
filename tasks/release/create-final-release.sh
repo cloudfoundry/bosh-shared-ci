@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-version_flag=""
-if [ -f version/version ]; then
-  version_flag="--version $(cat version/version)"
+if [ ! -s version/version ]; then
+  echo "ERROR: version/version file not found or empty. The version resource must be provided as an input." >&2
+  exit 1
 fi
 
+new_release_version="$(< version/version)"
+if ! [[ "${new_release_version}" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+  echo "ERROR: Invalid release version '${new_release_version}' (expected digits and dots)." >&2
+  exit 1
+fi
 git config --global user.name "${GIT_USER_NAME}"
 git config --global user.email "${GIT_USER_EMAIL}"
 
@@ -14,8 +19,7 @@ pushd release_repo > /dev/null
   echo "${PRIVATE_YML}" > config/private.yml
   set -x
 
-  bosh create-release --final ${version_flag} --tarball=/tmp/release-tarball.tgz
-  new_release_version=$(find releases/**/*.yml | grep -Eo '[0-9.]+[0-9]' | sort -V | tail -1)
+  bosh create-release --final --version "${new_release_version}" --tarball=/tmp/release-tarball.tgz
 
   release_tarball_name="${new_release_version}"
   if [ -n "${RELEASE_TARBALL_BASE_NAME}" ]; then
